@@ -17,7 +17,7 @@ import warlock from "./images/warlock.png";
 import wizard from "./images/wizard.png";
 
 function App() {
-	const [currentScore, setCurrentScore] = useState(1);
+	const [currentScore, setCurrentScore] = useState(0);
 	const [maxScore, setMaxScore] = useState(0);
 	const [currentLevel, setCurrentLevel] = useState(1);
 	const [playingDeck, setPlayingDeck] = useState([
@@ -25,14 +25,6 @@ function App() {
 		{ name: "Bard", image: bard },
 		{ name: "Cleric", image: cleric },
 		{ name: "Druid", image: druid },
-		{ name: "Fighter", image: fighter },
-		{ name: "Monk", image: monk },
-		{ name: "Paladin", image: paladin },
-		{ name: "Ranger", image: ranger },
-		{ name: "Rogue", image: rogue },
-		{ name: "Sorcerer", image: sorcerer },
-		{ name: "Warlock", image: warlock },
-		{ name: "Wizard", image: wizard },
 	]);
 	const [fullDeck, setFullDeck] = useState([
 		{ name: "Barbarian", image: barbarian },
@@ -50,13 +42,22 @@ function App() {
 	]);
 
 	function newGame() {
-		setCurrentLevel(0);
+		setCurrentLevel(1);
 		setCurrentScore(0);
 		setPlayingDeck([]);
-		fillPlayingDeck(1);
+		renderRound(currentLevel);
 	}
 
-	function fillPlayingDeck() {
+	function nextLevel() {
+		if (currentLevel >= 3) {
+			return null;
+		} else {
+			setCurrentLevel(currentLevel + 1);
+			renderRound(currentLevel);
+		}
+	}
+
+	function fillPlayingDeck(currentLevel) {
 		switch (currentLevel) {
 			case 1:
 				setPlayingDeck(fullDeck.slice(0, 4));
@@ -69,27 +70,45 @@ function App() {
 				break;
 		}
 	}
-	function renderRound() {
+	function renderRound(currentLevel) {
+		fillPlayingDeck(currentLevel);
 		let listItems = playingDeck.map((cl) => (
-			<Card key={cl.name} name={cl.name} image={cl.image} />
+			<Card
+				key={cl.name}
+				name={cl.name}
+				image={cl.image}
+				playRound={playRound}
+			/>
 		));
 		return (
-			<ul className="flex flex-row flex-wrap justify-center content-center m-0">
+			<ul className="flex flex-row flex-wrap justify-center content-start m-0 h-full">
 				{listItems}
 			</ul>
 		);
 	}
 
+	useEffect(() => {
+		console.log(`nextLevel clicked with new current level -> ${currentLevel}`);
+		renderRound(currentLevel);
+	}, [currentLevel]);
+
+	function playRound(card) {
+		console.log(`Played round with card ${card.name}`);
+	}
+
 	return (
-		<React.Fragment>
+		<div className="w-screen h-screen flex flex-col">
 			<UserUI
 				currentScore={currentScore}
 				maxScore={maxScore}
 				currentLevel={currentLevel}
 				newGame={newGame}
 			/>
-			<div className="bg-red-700 h-screen m-auto p-2">{renderRound()}</div>
-		</React.Fragment>
+			<button onClick={nextLevel}>
+				Next Level -- currentLevel{currentLevel}
+			</button>
+			<div className="bg-red-700 m-auto h-full w-full">{renderRound()}</div>
+		</div>
 	);
 }
 
