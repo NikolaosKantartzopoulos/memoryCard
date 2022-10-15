@@ -25,6 +25,14 @@ function App() {
 		{ name: "Bard", image: bard },
 		{ name: "Cleric", image: cleric },
 		{ name: "Druid", image: druid },
+		{ name: "Fighter", image: fighter },
+		{ name: "Monk", image: monk },
+		{ name: "Paladin", image: paladin },
+		{ name: "Ranger", image: ranger },
+		{ name: "Rogue", image: rogue },
+		{ name: "Sorcerer", image: sorcerer },
+		{ name: "Warlock", image: warlock },
+		{ name: "Wizard", image: wizard },
 	]);
 	const [fullDeck, setFullDeck] = useState([
 		{ name: "Barbarian", image: barbarian },
@@ -65,11 +73,11 @@ function App() {
 		let listItems = playingDeck.map((cl) => (
 			<Card key={cl.name} name={cl.name} image={cl.image} />
 		));
-		return <ul className="flex flex-row flex-wrap">{listItems}</ul>;
-	}
-
-	function renderPlayingDeck() {
-		console.log("renderPlayingDeck called");
+		return (
+			<ul className="flex flex-row flex-wrap justify-center content-center m-0">
+				{listItems}
+			</ul>
+		);
 	}
 
 	return (
@@ -80,9 +88,7 @@ function App() {
 				currentLevel={currentLevel}
 				newGame={newGame}
 			/>
-			<div className="bg-red-700 h-screen flex flex-row justify-around">
-				{renderRound()}
-			</div>
+			<div className="bg-red-700 h-screen m-auto p-2">{renderRound()}</div>
 		</React.Fragment>
 	);
 }
