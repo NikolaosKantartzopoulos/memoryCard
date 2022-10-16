@@ -9,7 +9,7 @@ function Card(props) {
 			<img
 				src={props.image}
 				alt={props.name}
-				className="rounded-full w-2/3 w-max-[150px]"
+				className="rounded-full w-2/3 max-w-[150px]"
 			/>
 			<div className="text-amber-400 text-xl md:text-2xl">{props.name}</div>
 		</div>

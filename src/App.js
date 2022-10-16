@@ -100,7 +100,7 @@ function App() {
 			/>
 		));
 		return (
-			<ul className="grid grid-cols-2 md:grid-cols-4 justify-center content-start m-0 h-5/6">
+			<ul className="grid grid-cols-3 md:grid-cols-4 justify-center content-start m-0 h-5/6">
 				{listItems}
 			</ul>
 		);
