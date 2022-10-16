@@ -26,6 +26,7 @@ function App() {
 		{ name: "Cleric", image: cleric },
 		{ name: "Druid", image: druid },
 	]);
+	const [cardsAlreadyClicked, setCardsAlreadyClicked] = useState("");
 	const [fullDeck, setFullDeck] = useState([
 		{ name: "Barbarian", image: barbarian },
 		{ name: "Bard", image: bard },
@@ -45,9 +46,9 @@ function App() {
 		setCurrentLevel(1);
 		setCurrentScore(0);
 		setPlayingDeck([]);
+		setCardsAlreadyClicked([]);
 		renderRound(currentLevel);
 	}
-
 	function nextLevel() {
 		if (currentLevel >= 3) {
 			return null;
@@ -56,8 +57,7 @@ function App() {
 			renderRound(currentLevel);
 		}
 	}
-
-	function fillPlayingDeck(currentLevel) {
+	let fillPlayingDeck = (currentLevel) => {
 		switch (currentLevel) {
 			case 1:
 				setPlayingDeck(fullDeck.slice(0, 4));
@@ -69,8 +69,8 @@ function App() {
 				setPlayingDeck(fullDeck.slice(0, 12));
 				break;
 		}
-	}
-	function renderRound(currentLevel) {
+	};
+	let renderRound = (currentLevel) => {
 		fillPlayingDeck(currentLevel);
 		let listItems = playingDeck.map((cl) => (
 			<Card
@@ -85,15 +85,17 @@ function App() {
 				{listItems}
 			</ul>
 		);
-	}
+	};
 
 	useEffect(() => {
-		console.log(`nextLevel clicked with new current level -> ${currentLevel}`);
+		// console.log(`nextLevel clicked with new current level -> ${currentLevel}`);
 		renderRound(currentLevel);
-	}, [currentLevel]);
+		return console.log(`cardsArlreadyClicked -> ${cardsAlreadyClicked}`);
+	}, [currentLevel, cardsAlreadyClicked]);
 
 	function playRound(card) {
 		console.log(`Played round with card ${card.name}`);
+		setCardsAlreadyClicked([...cardsAlreadyClicked, card.name]);
 	}
 
 	return (
@@ -105,7 +107,7 @@ function App() {
 				newGame={newGame}
 			/>
 			<button onClick={nextLevel}>
-				Next Level -- currentLevel{currentLevel}
+				Next Level {currentLevel + 1} -- currentLevel {currentLevel}
 			</button>
 			<div className="bg-red-700 m-auto h-full w-full">{renderRound()}</div>
 		</div>
