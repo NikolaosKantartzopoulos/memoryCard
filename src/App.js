@@ -17,6 +17,7 @@ import warlock from "./images/warlock.png";
 import wizard from "./images/wizard.png";
 
 function App() {
+	const [gameOver, setGameOver] = useState(false);
 	const [currentScore, setCurrentScore] = useState(0);
 	const [maxScore, setMaxScore] = useState(0);
 	const [currentLevel, setCurrentLevel] = useState(1);
@@ -26,7 +27,7 @@ function App() {
 		{ name: "Cleric", image: cleric },
 		{ name: "Druid", image: druid },
 	]);
-	const [cardsAlreadyClicked, setCardsAlreadyClicked] = useState("");
+	const [cardsAlreadyClicked, setCardsAlreadyClicked] = useState([]);
 	const [fullDeck, setFullDeck] = useState([
 		{ name: "Barbarian", image: barbarian },
 		{ name: "Bard", image: bard },
@@ -43,18 +44,20 @@ function App() {
 	]);
 
 	function newGame() {
-		setCurrentLevel(1);
+		setGameOver(false);
 		setCurrentScore(0);
-		setPlayingDeck([]);
+		setCurrentLevel(1);
 		setCardsAlreadyClicked([]);
+		setMaxScore(0);
 		renderRound(currentLevel);
 	}
 	function nextLevel() {
 		if (currentLevel >= 3) {
 			return null;
 		} else {
+			setCardsAlreadyClicked([]);
 			setCurrentLevel(currentLevel + 1);
-			renderRound(currentLevel);
+			fillPlayingDeck(currentLevel);
 		}
 	}
 	let fillPlayingDeck = (currentLevel) => {
@@ -70,8 +73,24 @@ function App() {
 				break;
 		}
 	};
-	let renderRound = (currentLevel) => {
-		fillPlayingDeck(currentLevel);
+	let renderRound = () => {
+		if (cardsAlreadyClicked.length == Object.keys(playingDeck).length) {
+			if (cardsAlreadyClicked.length == 12)
+				return (
+					<h1 className="h-[12vh] flex flex-row justify-around items-center text text-amber-400 text-3xl p-0">
+						A valiant Victory!
+					</h1>
+				);
+			nextLevel();
+		}
+		if (gameOver) {
+			return (
+				<h1 className="h-[12vh] flex flex-row justify-around items-center text text-amber-400 text-3xl p-0">
+					You Lose
+				</h1>
+			);
+		}
+
 		let listItems = playingDeck.map((cl) => (
 			<Card
 				key={cl.name}
@@ -88,14 +107,28 @@ function App() {
 	};
 
 	useEffect(() => {
-		// console.log(`nextLevel clicked with new current level -> ${currentLevel}`);
-		renderRound(currentLevel);
-		return console.log(`cardsArlreadyClicked -> ${cardsAlreadyClicked}`);
-	}, [currentLevel, cardsAlreadyClicked]);
+		if (!gameOver && currentScore > maxScore) {
+			setMaxScore(currentScore);
+		}
+	}, [currentScore]);
+
+	useEffect(() => {
+		return setPlayingDeck(_.shuffle(playingDeck));
+	}, [cardsAlreadyClicked]);
+
+	useEffect(() => {
+		fillPlayingDeck(currentLevel);
+	}, [currentLevel]);
 
 	function playRound(card) {
 		console.log(`Played round with card ${card.name}`);
-		setCardsAlreadyClicked([...cardsAlreadyClicked, card.name]);
+		if (cardsAlreadyClicked.includes(card.name)) {
+			setGameOver(true);
+			console.log("You lose");
+		} else {
+			setCurrentScore(currentScore + 1);
+			setCardsAlreadyClicked(cardsAlreadyClicked.concat(card.name));
+		}
 	}
 
 	return (
@@ -106,9 +139,6 @@ function App() {
 				currentLevel={currentLevel}
 				newGame={newGame}
 			/>
-			<button onClick={nextLevel}>
-				Next Level {currentLevel + 1} -- currentLevel {currentLevel}
-			</button>
 			<div className="bg-red-700 m-auto h-full w-full">{renderRound()}</div>
 		</div>
 	);
